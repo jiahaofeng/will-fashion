@@ -11,8 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import com.will.fashion.entity.model.Users;
+import com.will.fashion.entity.model.WillUsers;
 import com.will.fashion.util.DateTimeUtil;
 @Service
 public class userService {
@@ -21,23 +20,25 @@ public class userService {
 	private MongoTemplate mongoTemplate;
 	
 	//用户保存
-	public void saveUsers(Users users) throws Exception {
+	public void saveUsers(WillUsers users) throws Exception {
 		mongoTemplate.save(users);
 	}
 	
 	//用户登录
-	public Users queryLogin(String loginName,String password) {
+	public WillUsers queryLogin(String loginName,String password) {
 		Criteria criteria = new Criteria();
-		criteria.and("loginName").is(loginName);
+		criteria.and("userName").is(loginName);
 		criteria.and("password").is(password);
-		Query query = new Query(criteria);
-		return mongoTemplate.findOne(query, Users.class,"users");
+		Query query = new Query();
+		query.addCriteria(criteria);
+		WillUsers users = mongoTemplate.findOne(query, WillUsers.class);
+		return users;
 	}
 	
 	//用户列表
-	public List<Users> usersQuery(int pageIndex,int pageSize,String userName,String email,String roles,
+	public List<WillUsers> usersQuery(int pageIndex,int pageSize,String userName,String email,String roles,
 								String status,String startDate,String endDate){
-		List<Users> userList = null;
+		List<WillUsers> userList = null;
 		Criteria criteria = new Criteria();
 		if (!StringUtils.isEmpty(userName.trim())) {
 			criteria.and("userName").regex(userName);
@@ -46,7 +47,6 @@ public class userService {
 			criteria.and("email").regex(email);
 		}
 		if (!StringUtils.isEmpty(roles.trim())) {
-			
 			criteria.and("roles").is(roles);
 		}
 		if (!StringUtils.isEmpty(status.trim())) {
@@ -60,7 +60,7 @@ public class userService {
 		query.skip(pageIndex);  
         query.limit(pageSize);
 		try {
-			userList = mongoTemplate.find(query, Users.class);
+			userList = mongoTemplate.find(query, WillUsers.class);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -90,7 +90,7 @@ public class userService {
 		}
 		Query query = new Query(criteria);		
 		try {
-			userTotal = mongoTemplate.find(query, Users.class).size();
+			userTotal = mongoTemplate.find(query, WillUsers.class).size();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

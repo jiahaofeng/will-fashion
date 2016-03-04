@@ -1,9 +1,11 @@
 package com.will.fashion.controllers;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.will.fashion.entity.model.Users;
+import com.will.fashion.entity.model.WillUsers;
 import com.will.fashion.services.userService;
 import com.will.fashion.util.StringCommon;
 
@@ -28,15 +30,16 @@ public class UserController {
 	
 	
 	@RequestMapping(value = "/userList", method = RequestMethod.POST)
-	public @ResponseBody JSONObject userList(@RequestParam String pageIndex,String pageSize,String userName,String email,String roles,
+	public @ResponseBody Map<String, Object>  userList(@RequestParam String pageIndex,String pageSize,String userName,String email,String roles,
 															String status,String startDate,String endDate){
-		JSONObject data = new JSONObject();
+		/*JSONObject data = new JSONObject();*/
+		Map<String, Object> data = new HashMap<String, Object>();
 		int limitIndex = (Integer.parseInt(pageIndex)-1)*Integer.parseInt(pageSize);
 		
 		int totalNum = userservice.usersTotal(StringCommon.StrFormat(userName),StringCommon.StrFormat(email),StringCommon.StrFormat(roles),StringCommon.StrFormat(status),
 				StringCommon.StrFormat(startDate),StringCommon.StrFormat(endDate));
 		
-		List<Users>userList = userservice.usersQuery(limitIndex,Integer.parseInt(pageSize),StringCommon.StrFormat(userName),
+		List<WillUsers>userList = userservice.usersQuery(limitIndex,Integer.parseInt(pageSize),StringCommon.StrFormat(userName),
 				StringCommon.StrFormat(email),StringCommon.StrFormat(roles),StringCommon.StrFormat(status),
 				StringCommon.StrFormat(startDate),StringCommon.StrFormat(endDate));
 		
@@ -68,7 +71,7 @@ public class UserController {
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
 	public @ResponseBody ModelAndView userRegister(@RequestParam String userName,String pwd,String email,String status,String roles) {
 		JSONObject result = new JSONObject();
-		Users users = new Users();
+		WillUsers users = new WillUsers();
 		users.setUserName(userName.trim());
 		users.setPassword(pwd.trim());
 		users.setEmail(email.trim());
@@ -83,29 +86,40 @@ public class UserController {
 			result.put("message", "fail");
 			e.printStackTrace();
 		}
-		return new ModelAndView("/User/UserList","result",result);
+		return new ModelAndView("User/UserList","result",result);
 	}
 	
 	/*
 	 * 用户登录
 	 * */
 	@RequestMapping(value = "/usersLogin", method = RequestMethod.POST)
-	public @ResponseBody JSONObject usersLogin(@RequestParam String loginName,String loginPwd) {
-		JSONObject msg = new JSONObject();
+	public @ResponseBody JSONObject usersLogin(HttpServletRequest request,@RequestParam String loginName,String loginPwd) {
+		JSONObject result = new JSONObject();
 		if (StringUtils.isEmpty(loginName)) {
-			msg.put("msg", "loginError");
+			result.put("status", "0");
 		}
 		if (StringUtils.isEmpty(loginPwd)) {
-			msg.put("msg", "pwdError");
+			result.put("status", "0");
 		}
-		Users users = userservice.queryLogin(loginName, loginPwd);
+		WillUsers users = userservice.queryLogin(loginName, loginPwd);
 		if (users!=null) {
-			msg.put("msg", users);
+			result.put("status", "1");
+			result.put("loginName", users.getUserName());
+			result.put("roles", users.getRoles());
+			HttpSession session = request.getSession();
+			session.setAttribute("userName", users.getUserName());
+			System.out.println(session);
 		}else {
-			msg.put("msg", "Error");
+			result.put("status", "2");
 		}
-		return msg;
+		return result;
 	}
 	
-	
+	/*
+	 * 用户登录
+	 * */
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public @ResponseBody void login() {
+		System.out.println("djksdkdsd");
+	}
 }
