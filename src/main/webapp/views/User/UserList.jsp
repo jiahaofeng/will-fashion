@@ -6,21 +6,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="${path}/Css/bootstrap.css" />
-<link rel="stylesheet" type="text/css" href="${path}/Css/bootstrap-responsive.css" />
-<link rel="stylesheet" type="text/css" href="${path}/Css/style.css" />
-<link rel="stylesheet" href="${path}/Css/jquery-ui.css">
-<link rel="stylesheet" href="${path}/Css/jquery.pagination.css">
+<link rel="stylesheet" type="text/css" href="${path}/views/Css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="${path}/views/Css/bootstrap-responsive.css" />
+<link rel="stylesheet" type="text/css" href="${path}/views/Css/style.css" />
+<link rel="stylesheet" href="${path}/views/Css/jquery-ui.css">
+<link rel="stylesheet" href="${path}/views/Css/jquery.pagination.css">
 
-<script type="text/javascript" src="${path}/Js/jquery.js"></script>
-<script type="text/javascript" src="${path}/Js/jquery.pagination.js"></script>
-<script src="${path}/Js/jquery-ui.js"></script>
+<script type="text/javascript" src="${path}/views/Js/jquery.js"></script>
+<script type="text/javascript" src="${path}/views/Js/jquery.pagination.js"></script>
+<script src="${path}/views/Js/jquery-ui.js"></script>
 <%--  <script src="${path}/Js/jquery.shCircleLoader.js" type="text/javascript"></script> --%>
-<script type="text/javascript" src="${path}/Js/jquery.sorted.js"></script>
-<script type="text/javascript" src="${path}/Js/bootstrap.js"></script>
-<script type="text/javascript" src="${path}/Js/ckform.js"></script>
-<script type="text/javascript" src="${path}/Js/common.js"></script>
-<script type="text/javascript" src="${path}/Js/dateCenvert.js"></script>
+<script type="text/javascript" src="${path}/views/Js/jquery.sorted.js"></script>
+<script type="text/javascript" src="${path}/views/Js/bootstrap.js"></script>
+<script type="text/javascript" src="${path}/views/Js/ckform.js"></script>
+<script type="text/javascript" src="${path}/views/Js/common.js"></script>
+<script type="text/javascript" src="${path}/views/Js/dateCenvert.js"></script>
 
 <style type="text/css">
 
@@ -254,9 +254,7 @@ body {
 					endDate:endDate
 				 },
 			dataType :"json",
-			global:false,
-	        cache : false,
-	        timeout : 5000, //超时时间设置，单位毫秒
+			ifModified : true,
 			success :function(data){
 				$("#noData").remove();
 				$("#hideTotalCount").val(data.totalNum);
@@ -278,6 +276,7 @@ body {
 					pageInit(pageIndex);
 			},
 			error:function(data){
+				console.log(data);
 				$("#noData").html("<center><h3>出错了！</h3></center");
 				//pagination();
 			}
@@ -308,7 +307,7 @@ body {
 	function addNewUsers(){
 		$('#addUser').click(function() {
 			/* $('#shclKeyframes').shCircleLoader({keyframes:"0%{background:black}40%{background:transparent}60%{background:transparent}100%{background:black}"}); */
-			window.location.href = "${path}/User/add.jsp";
+			window.location.href = "${path}/views/User/add.jsp";
 		});
 	}
 	//清空日期选择 

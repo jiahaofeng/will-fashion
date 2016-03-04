@@ -6,14 +6,14 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="${path}/Css/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="${path}/Css/bootstrap-responsive.css" />
-    <link rel="stylesheet" type="text/css" href="${path}/Css/style.css" />
-    <script type="text/javascript" src="${path}/Js/jquery.js"></script>
-    <script type="text/javascript" src="${path}/Js/jquery.sorted.js"></script>
-    <script type="text/javascript" src="${path}/Js/bootstrap.js"></script>
-    <script type="text/javascript" src="${path}/Js/ckform.js"></script>
-    <script type="text/javascript" src="${path}/Js/common.js"></script>
+<link rel="stylesheet" type="text/css" href="${path}/views/Css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="${path}/views/Css/bootstrap-responsive.css" />
+    <link rel="stylesheet" type="text/css" href="${path}/views/Css/style.css" />
+    <script type="text/javascript" src="${path}/views/Js/jquery.js"></script>
+    <script type="text/javascript" src="${path}/views/Js/jquery.sorted.js"></script>
+    <script type="text/javascript" src="${path}/views/Js/bootstrap.js"></script>
+    <script type="text/javascript" src="${path}/views/Js/ckform.js"></script>
+    <script type="text/javascript" src="${path}/views/Js/common.js"></script>
 <title>Insert title here</title>
 <style type="text/css">
         body {
@@ -69,7 +69,8 @@
     <tr>
         <td class="tableleft"></td>
         <td>
-            <button type="submit" class="btn btn-primary" type="button">保存</button> &nbsp;&nbsp;<button type="button" class="btn btn-success" name="backid" id="backid">返回</button>
+            <button type="submit" class="btn btn-primary" type="button">保存</button> &nbsp;&nbsp;
+            <button type="button" class="btn btn-success" name="backid" id="backid">返回</button>
         </td>
     </tr>
 </table>
@@ -80,7 +81,7 @@
 $(function () {    
 	
 	$('#backid').click(function(){
-			window.location.href="${path}/User/UserList.jsp";
+			window.location.href="${path}/views/User/UserList.jsp";
 	 });
 	
 	 var val=$('input:radio[name="status"]:checked').val();

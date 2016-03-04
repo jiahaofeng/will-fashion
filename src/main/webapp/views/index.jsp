@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ page isELIgnored="false" %> 
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+    <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 	<c:set var="path" value="<%=request.getContextPath()%>"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -20,7 +22,7 @@
 		</div>
 
 		<div class="dl-log">
-			欢迎您，<span class="dl-log-user">root</span><a
+			欢迎您，<span class="dl-log-user"><%-- <% String loginName=request.getParameter("loginName");%><%=loginName %> --%>${loginName}</span><a
 				href="/chinapost/index.php?m=Public&a=logout" title="退出系统"
 				class="dl-log-quit">[退出]</a>
 		</div>
@@ -57,7 +59,7 @@
 					items : [ {
 						id : '12',
 						text : '机构管理',
-						href : 'Node/index.html'
+						href : 'views/Node/index.html'
 					}, {
 						id : '3',
 						text : '角色管理',
@@ -65,7 +67,7 @@
 					}, {
 						id : '4',
 						text : '用户管理',
-						href : '${path}/User/UserList.jsp'
+						href : '${path}/views/User/UserList.jsp'
 					}, {
 						id : '6',
 						text : '菜单管理',
