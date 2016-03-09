@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ page isELIgnored="false" %> 
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 	<c:set var="path" value="<%=request.getContextPath()%>"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -15,6 +16,7 @@
     <script type="text/javascript" src="${path}/views/Js/bootstrap.js"></script>
     <script type="text/javascript" src="${path}/views/Js/ckform.js"></script>
     <script type="text/javascript" src="${path}/views/Js/common.js"></script>
+    <script type="text/javascript" src="${path}/views/Js/jquery.cookie.js"></script>
 <style type="text/css">
         body {
             padding-top: 40px;
@@ -54,27 +56,68 @@
 <body>
 	<div class="container">
 
-    <form class="form-signin" method="post" action="">
+    <form class="form-signin" id="loginForm" method="post" action="${path}/users/usersLogin">
       
         <center><h2 class="form-signin-heading">登录系统</h2></center>
-        <div id="loginInfo" class="alert alert-error" hidden="true">用户名或密码错误，请重新登录！</div>
-        <div id="loginInfoNull" class="alert alert-error" hidden="true">用户名或密码不能为空！</div>
-        <input type="text" name="username" id="loginName" class="input-block-level" placeholder="账号">  
-       	<div id="nameInfo" class="alert alert-error" hidden="true">用户名不能为空！</div>
-        <input type="password" name="password" id="loginPwd" class="input-block-level" placeholder="密码">
-         <div id="pwdInfo" class="alert alert-error" hidden="true">密码不能为空！</div>
-        <p><a class="btn btn-large btn-primary" type="submit" id="loginSubmit">登录</a></p>
+        <div id="loginInfo" class="alert alert-error" hidden="true"></div>
+        <input type="text" name="loginName" id="loginName" class="input-block-level" placeholder="账号">  
+        <input type="password" name="loginPwd" id="loginPwd" class="input-block-level" placeholder="密码">
+        <p><button class="btn btn-large btn-primary" type="submit" id="loginSubmit">登录</button></p>
+        <!-- <input type="checkbox" name="remember_password" id="remember_password"/><span id="span_tip"">记住密码</span> -->
     </form>
 
 </div>
-</body>
 <script type="text/javascript">
 
 	$(function() {
-		
+		/* volidateSubmit(); */
+	});
+
+		var status = '${status}';
+		console.log(status);
+		if (status=="0") {
+			$("#loginInfo").removeAttr("hidden");
+			$("#loginInfo").text("用户名或密码不能为空");
+		}
+		if (status=="2") {
+			$("#loginInfo").removeAttr("hidden");
+			$("#loginInfo").text("用户名或密码错误");
+		}
+		if (status=="4") {
+			$("#loginInfo").removeAttr("hidden");
+			$("#loginInfo").text("非管理员无权限");
+		}
+
+	$("#loginForm").submit(function(){
+		$("#loginInfo").attr("hidden",true);
+		var loginName = $("#loginName").val();
+		var loginPwd = $("#loginPwd").val();
+		if (loginName=="") {
+			$("#loginInfo").removeAttr("hidden");
+			$("#loginInfo").text("用户名不能为空");
+			return false;
+		}
+		if (loginPwd=="") {
+			$("#loginInfo").removeAttr("hidden");
+			$("#loginInfo").text("密码不能为空");
+			return false;
+		} 
 	});
 	
-	
+	/* function Login()
+	   {
+		var uName =$('#uName').val();
+		var psw = $('#psw').val();
+		if($('#remember_password').attr('checked') == true){//保存密码
+			$.cookie('username',uName, {expires:7,path:'/'});
+			$.cookie('password',psw, {expires:7,path:'/'});
+		}else{//删除cookie
+			$.cookie('username', '', { expires: -1, path: '/' });
+			$.cookie('password', '', { expires: -1, path: '/' });
+		}
+		//....
+		//提交表单的操作
+	} 
  	$("#loginSubmit").click(function(){
  		$("#nameInfo").attr("hidden",true);
  		$("#pwdInfo").attr("hidden",true);
@@ -106,7 +149,9 @@
 						return false;
 					}
 					if (data.status=="1") {
-						window.location.href = "${path}/views/index.jsp?loginName="+data.loginName;
+						$.cookie("loginName", data.loginName, { expires: 7 }); // 存储一个带7天期限的 cookie 
+						window.location.href = "${path}/views/index.jsp"; 
+						
 					}
 				}
 			},
@@ -114,6 +159,8 @@
 				alert("系统登录错误");
 			} 
 		}); 
-	}); 
+	});  */
 </script>
+</body>
+
 </html>

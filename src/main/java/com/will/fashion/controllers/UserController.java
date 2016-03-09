@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import com.will.fashion.util.StringCommon;
 @Controller
 @RequestMapping("/users")
 public class UserController {
+	private static Logger logger = Logger.getLogger(UserController.class);
 	@Autowired
 	private userService userservice;
 	
@@ -93,33 +95,44 @@ public class UserController {
 	 * 用户登录
 	 * */
 	@RequestMapping(value = "/usersLogin", method = RequestMethod.POST)
-	public @ResponseBody JSONObject usersLogin(HttpServletRequest request,@RequestParam String loginName,String loginPwd) {
-		JSONObject result = new JSONObject();
-		if (StringUtils.isEmpty(loginName)) {
+	public @ResponseBody ModelAndView usersLogin(HttpServletRequest request,@RequestParam String loginName,String loginPwd) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		String view = "";
+		if (StringUtils.isEmpty(loginName)||StringUtils.isEmpty(loginPwd)) {
 			result.put("status", "0");
-		}
-		if (StringUtils.isEmpty(loginPwd)) {
-			result.put("status", "0");
-		}
-		WillUsers users = userservice.queryLogin(loginName, loginPwd);
-		if (users!=null) {
-			result.put("status", "1");
-			result.put("loginName", users.getUserName());
-			result.put("roles", users.getRoles());
-			HttpSession session = request.getSession();
-			session.setAttribute("userName", users.getUserName());
-			System.out.println(session);
+			view = "login";
 		}else {
-			result.put("status", "2");
-		}
-		return result;
+			WillUsers users = userservice.queryLogin(loginName, loginPwd);
+			if (users!=null) {
+				if ("1".equals(users.getRoles())) {
+					result.put("user", users);
+					result.put("status", "1");
+					HttpSession session = request.getSession();
+					session.setAttribute("userName", users.getUserName());
+					Object object = request.getSession().getAttribute("userName");
+					logger.info("============>放入session:"+object);
+					view = "index";
+				}else {
+					result.put("status", "4");
+					view = "login";
+				}
+				
+			}else {
+				result.put("status", "2");
+				view = "login";
+			}
+		}	
+		return new ModelAndView(view,result);
 	}
 	
 	/*
 	 * 用户登录
 	 * */
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public @ResponseBody void login() {
-		System.out.println("djksdkdsd");
+	@RequestMapping(value = "/loginOut", method = RequestMethod.POST)
+	public @ResponseBody ModelAndView login(HttpServletRequest request) {
+		request.getSession().invalidate();//清除当前用户相关的session对象
+		String username =  request.getSession().getAttribute("userName")==null?null:request.getSession().getAttribute("userName").toString(); 
+		System.out.println(username);
+		return new ModelAndView("User/UserList","result","");
 	}
 }

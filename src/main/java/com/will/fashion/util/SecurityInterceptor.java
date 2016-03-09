@@ -39,10 +39,23 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
         log.info("contextPath:"+contextPath);    
         log.info("url:"+url);    
           
-        String username =  request.getSession().getAttribute("user")==null?null:request.getSession().getAttribute("user").toString();   
+        String username =  request.getSession().getAttribute("userName")==null?null:request.getSession().getAttribute("userName").toString();   
         if(username == null){  
             log.info("Interceptor：跳转到login页面！");  
-            request.getRequestDispatcher("/views/login.jsp").forward(request, response);  
+//            request.getRequestDispatcher("/views/login.jsp").forward(request, response);  
+            /*response.sendRedirect("/views/login.jsp");*/
+            if(request.getHeader("x-requested-with")==null){
+				response.sendRedirect("/views/login.jsp");
+			}else{
+				response.setCharacterEncoding("UTF-8");
+				response.setContentType("text/html");
+				response.setHeader("Cache-Control", "no-cache");
+
+				response.getWriter().write("<script type=\"text/javascript\">window.location.href = '${path}/views/index.jsp'</script>");
+				response.getWriter().flush();
+				response.getWriter().close();
+			}
+
             return false;  
         }else  
             return true;    
