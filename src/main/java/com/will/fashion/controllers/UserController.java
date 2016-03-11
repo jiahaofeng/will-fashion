@@ -108,7 +108,8 @@ public class UserController {
 					result.put("user", users);
 					result.put("status", "1");
 					HttpSession session = request.getSession();
-					session.setAttribute("userName", users.getUserName());
+					session.setMaxInactiveInterval(30*60); // 设置session失效时间（timeout），单位为秒 
+					session.setAttribute("userName", users.getUserName());// 用户名和密码正确，保存登录信息 
 					Object object = request.getSession().getAttribute("userName");
 					logger.info("============>放入session:"+object);
 					view = "index";

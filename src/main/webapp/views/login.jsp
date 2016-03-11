@@ -74,7 +74,6 @@
 	});
 
 		var status = '${status}';
-		console.log(status);
 		if (status=="0") {
 			$("#loginInfo").removeAttr("hidden");
 			$("#loginInfo").text("用户名或密码不能为空");

@@ -4,9 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.sf.json.JSONObject;
+
 import org.apache.catalina.util.RequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -40,25 +44,30 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
         log.info("url:"+url);    
           
         String username =  request.getSession().getAttribute("userName")==null?null:request.getSession().getAttribute("userName").toString();   
-        if(username == null){  
-            log.info("Interceptor：跳转到login页面！");  
-//            request.getRequestDispatcher("/views/login.jsp").forward(request, response);  
-            /*response.sendRedirect("/views/login.jsp");*/
-            if(request.getHeader("x-requested-with")==null){
-				response.sendRedirect("/views/login.jsp");
-			}else{
-				response.setCharacterEncoding("UTF-8");
-				response.setContentType("text/html");
-				response.setHeader("Cache-Control", "no-cache");
+        if(username == null){ 
+        	log.info("Interceptor：跳转到login页面！");
+            if(isAjaxRequest(request)){      	 
+//            	response.setCharacterEncoding("UTF-8");  
+//                response.sendError(HttpStatus.UNAUTHORIZED.value(), "您已经太长时间没有操作,请刷新页面");  
+//            	response.setCharacterEncoding("UTF-8");
+//				response.setContentType("text/html");
+//				response.setHeader("Cache-Control", "no-cache");
 
-				response.getWriter().write("<script type=\"text/javascript\">window.location.href = '${path}/views/index.jsp'</script>");
+//				response.getWriter().write("<script type=\"text/javascript\">window.location.href = '${path}/views/index.jsp'</script>");
+            	JSONObject jsObject = new JSONObject();
+            	jsObject.put("success", false);
+            	jsObject.put("unlogin", true);
+            	response.getWriter().write(jsObject.toString());
 				response.getWriter().flush();
 				response.getWriter().close();
+            	return true;
+			}else{
+				response.sendRedirect(request.getContextPath()+"/views/login.jsp");
+				return false;  
 			}
-
-            return false;  
-        }else  
-            return true;    
+            
+        } 
+        return true;    
     }  
 	 /** 
      * 在业务处理器处理请求执行完成后,生成视图之前执行的动作    
@@ -84,5 +93,19 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
             HttpServletResponse response, Object handler, Exception ex)    
             throws Exception {    
         log.info("==============执行顺序: 3、afterCompletion================");    
-    }  
+    }
+    
+    public static boolean isAjaxRequest(HttpServletRequest request)  
+    {  
+        String header = request.getHeader("X-Requested-With");   
+        if (header != null && "XMLHttpRequest".equals(header))   
+            return true;   
+        else   
+            return false;    
+    } 
+    
+    public static @ResponseBody ModelAndView returnLogin(HttpServletRequest request){
+    	System.out.println("----------------------------->"+request.getContextPath());
+    	return new ModelAndView("/"+request.getContextPath()+"/login");
+    }
 }

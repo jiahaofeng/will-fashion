@@ -62,3 +62,15 @@ function trimStr(){
 		}
 	};
 } 
+
+function volidateLogin(){
+	this.trimchar = function(str){
+		if (str!=null&&str!="") {
+			var s = new String(str);
+			var re = s.trim(str);
+			return re;
+		}else {
+			return "";
+		}
+	};
+} 

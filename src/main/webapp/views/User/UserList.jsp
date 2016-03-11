@@ -20,7 +20,7 @@
 <script type="text/javascript" src="${path}/views/Js/bootstrap.js"></script>
 <script type="text/javascript" src="${path}/views/Js/ckform.js"></script>
 <script type="text/javascript" src="${path}/views/Js/common.js"></script>
-<script type="text/javascript" src="${path}/views/Js/dateCenvert.js"></script>
+<script type="text/javascript" src="${path}/views/Js/myCommon.js"></script>
 
 <style type="text/css">
 
@@ -256,6 +256,7 @@ body {
 			dataType :"json",
 			ifModified : true,
 			success :function(data){
+				console.log(data);
 				$("#noData").remove();
 				$("#hideTotalCount").val(data.totalNum);
 				var users = data.users;
