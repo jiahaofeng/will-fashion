@@ -9,12 +9,18 @@ import net.sf.json.JSONObject;
 import org.apache.catalina.util.RequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.will.fashion.entity.model.WillUsers;
+import com.will.fashion.services.userService;
+
 public class SecurityInterceptor extends HandlerInterceptorAdapter {
+	@Autowired
+	private userService userservice;
 	private final Logger log = LoggerFactory.getLogger(SecurityInterceptor.class);  
     public static final String LAST_PAGE = "com.alibaba.lastPage";  
 	/**  
@@ -55,8 +61,8 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 
 //				response.getWriter().write("<script type=\"text/javascript\">window.location.href = '${path}/views/index.jsp'</script>");
             	JSONObject jsObject = new JSONObject();
-            	jsObject.put("success", false);
-            	jsObject.put("unlogin", true);
+            	jsObject.put("status", "404");//未登录
+            	jsObject.put("isLogin", false);
             	response.getWriter().write(jsObject.toString());
 				response.getWriter().flush();
 				response.getWriter().close();
@@ -66,7 +72,23 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 				return false;  
 			}
             
-        } 
+        } else {
+			boolean loginAuth = userservice.checkLoginName(username);
+			if (!loginAuth) {
+				if(isAjaxRequest(request)){
+					JSONObject jsObject = new JSONObject();
+	            	jsObject.put("status", "404");//未登录
+	            	jsObject.put("isLogin", false);
+	            	response.getWriter().write(jsObject.toString());
+					response.getWriter().flush();
+					response.getWriter().close();
+	            	return true;
+				}else {
+					response.sendRedirect(request.getContextPath()+"/views/login.jsp");
+					return false;
+				}
+			}
+		}
         return true;    
     }  
 	 /** 
@@ -104,8 +126,5 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
             return false;    
     } 
     
-    public static @ResponseBody ModelAndView returnLogin(HttpServletRequest request){
-    	System.out.println("----------------------------->"+request.getContextPath());
-    	return new ModelAndView("/"+request.getContextPath()+"/login");
-    }
+    
 }

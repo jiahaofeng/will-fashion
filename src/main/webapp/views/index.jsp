@@ -16,7 +16,8 @@
 	<script type="text/javascript" src="${path}/views/assets/js/common/main-min.js"></script>
 	<script type="text/javascript" src="${path}/views/assets/js/config-min.js"></script>
 <script type="text/javascript" src="${path}/views/Js/jquery.cookie.js"></script> 
-<title>Insert title here</title>
+<script type="text/javascript" src="${path}/views/Js/myCommon.js"></script>
+<title>后台管理系统</title>
 </head>
 <body>
 
@@ -26,9 +27,10 @@
 			<img src="${path}/views/assets/img/top.png">
 		</div>
 
-		<div class="dl-log">
-			欢迎您，<span class="dl-log-user" id="loginName"><%-- <% String loginName=request.getParameter("loginName");%><%=loginName+"dd" %> ${param.loginName} --%>${user.userName}</span>
-			<a href="${path}/users/loginOut" title="退出系统" class="dl-log-quit" id="loginOut">[退出]</a>
+		<div class="dl-log" id="loginHeader"><%-- <% String loginName=request.getParameter("loginName");%><%=loginName+"dd" %> ${param.loginName} --%>
+			欢迎您，<span class="dl-log-user" id="loginName">
+			</span>
+			<a href="#" title="退出系统" class="dl-log-quit" id="loginOut">[退出]</a>
 		</div>
 	</div>
 	<div class="content">
@@ -92,39 +94,32 @@
 			});
 		});
 		
-		/* $(function(){
-		    if($.cookie("loginName")!=null){
+		function setCookies(){
+			var userName = '${user.userName}';
+			if (new trimStr().trimchar(userName)!="") {
+				$.cookie('loginName',userName);
+			} 
+		}
+		
+		function getCookies(){
+			if (new trimStr().trimchar($.cookie("loginName"))!="") {
+				$("#loginName").append($.cookie("loginName"));
+			}else {
+				$("#loginHeader").empty();
+			}
+		}
+			
+		
+		$(function(){
+			 setCookies();
+			 getCookies();
+		    /* if($.cookie("loginName")!=null){
 		    	$("#loginName").append($.cookie("loginName"));
-		    };
-		}); */
+		    }; */
+		}); 
 
 		$("#loginOut").click(function(){
-			$.ajax({
-				url:"${path}/users/loginOut",
-				type: "POST",
-				data:{},
-				dataType :"json",
-				success :function(data){
-					if (data!=null&&data!="") {
-						if (data.status=="0") {
-							$("#loginInfoNull").removeAttr("hidden");
-							return false;
-						}
-						if (data.status=="2") {
-							$("#loginInfo").removeAttr("hidden");
-							return false;
-						}
-						if (data.status=="1") {
-							/* $.cookie("loginName", data.loginName, { expires: 7 }); // 存储一个带7天期限的 cookie  */
-							window.location.href = "${path}/views/index.jsp";
-							
-						}
-					}
-				},
-				error:function(){
-					alert("系统登录错误");
-				} 
-			}); 
+			top.location.href="${path}/views/loginOut.jsp";
 		});  
 	</script>
 	<div style="text-align: center;">

@@ -6,7 +6,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>后台管理系统</title>
+<title>登录页面</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="${path}/views/Css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="${path}/views/Css/bootstrap-responsive.css" />
@@ -84,7 +84,7 @@
 		}
 		if (status=="4") {
 			$("#loginInfo").removeAttr("hidden");
-			$("#loginInfo").text("非管理员无权限");
+			$("#loginInfo").text("无登录权限");
 		}
 
 	$("#loginForm").submit(function(){

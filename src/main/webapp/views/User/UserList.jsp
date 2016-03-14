@@ -132,7 +132,7 @@ body {
 	        <col width="14%">
 	        <col width="14%">
 	        <col width="5%">
-	        <col width="9%">
+	        <col width="10%">
 	    </colgroup>
 		<thead>
 			<tr>
@@ -256,7 +256,7 @@ body {
 			dataType :"json",
 			ifModified : true,
 			success :function(data){
-				console.log(data);
+				new volidateLogin().isLogin(data.status,data.isLogin);
 				$("#noData").remove();
 				$("#hideTotalCount").val(data.totalNum);
 				var users = data.users;

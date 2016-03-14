@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import com.will.fashion.entity.model.WillUsers;
 import com.will.fashion.util.DateTimeUtil;
 @Service
@@ -102,6 +103,33 @@ public class userService {
 		SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date(date_long);
 		return sdf.format(date);
+	}
+	
+	public void saveLastLoginDatetime(WillUsers users) {
+		users.setLastloginTime(System.currentTimeMillis());
+		try {
+			saveUsers(users);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean checkLoginName(String loginName) {
+		boolean flag = true;
+		Criteria criteria = new Criteria();
+		criteria.and("userName").is(loginName);
+		Query query = new Query();
+		query.addCriteria(criteria);
+		WillUsers users = mongoTemplate.findOne(query, WillUsers.class);
+		if (users!=null) {
+			if (!"1".equals(users.getStatus())||!"1".equals(users.getRoles())) {
+				flag = false;
+			}
+		}else {
+			flag = false;
+		}
+		return flag;
 	}
 	
 }

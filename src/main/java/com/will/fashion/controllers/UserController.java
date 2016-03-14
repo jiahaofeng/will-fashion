@@ -104,14 +104,17 @@ public class UserController {
 		}else {
 			WillUsers users = userservice.queryLogin(loginName, loginPwd);
 			if (users!=null) {
-				if ("1".equals(users.getRoles())) {
+				if ("1".equals(users.getRoles())&&"1".equals(users.getStatus())) {
 					result.put("user", users);
 					result.put("status", "1");
+					userservice.saveLastLoginDatetime(users);//更新最后登录时间
+					
+					logger.info("============>放入session");
 					HttpSession session = request.getSession();
-					session.setMaxInactiveInterval(30*60); // 设置session失效时间（timeout），单位为秒 
+					session.setMaxInactiveInterval(30*60); // 设置session失效时间（timeout），单位为秒 30*60秒,30分钟
 					session.setAttribute("userName", users.getUserName());// 用户名和密码正确，保存登录信息 
 					Object object = request.getSession().getAttribute("userName");
-					logger.info("============>放入session:"+object);
+					logger.info("============>放入session的值:"+object);	
 					view = "index";
 				}else {
 					result.put("status", "4");
@@ -125,6 +128,7 @@ public class UserController {
 		}	
 		return new ModelAndView(view,result);
 	}
+	
 	
 	/*
 	 * 用户登录
