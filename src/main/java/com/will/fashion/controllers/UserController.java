@@ -64,6 +64,7 @@ public class UserController {
 		}
 		data.put("users", userList);
 		data.put("totalNum", totalNum);
+		System.out.println("+++return之前+++");
 		return data;
 	}
 	

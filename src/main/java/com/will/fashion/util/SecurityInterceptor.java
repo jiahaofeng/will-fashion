@@ -7,9 +7,11 @@ import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 
 import org.apache.catalina.util.RequestUtil;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +25,8 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
 	private userService userservice;
 	private final Logger log = LoggerFactory.getLogger(SecurityInterceptor.class);  
     public static final String LAST_PAGE = "com.alibaba.lastPage";  
+    
+    private NamedThreadLocal<Long> startTime = new NamedThreadLocal<Long>("StopWatch-StartTime");
 	/**  
      * 在业务处理器处理请求之前被调用  
      * 如果返回false  
@@ -39,15 +43,18 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
             HttpServletResponse response, Object handler) throws Exception {    
         /*if ("GET".equalsIgnoreCase(request.getMethod())) {  
             RequestUtil.saveRequest();  
-        }*/  
-        log.info("==============执行顺序: 1、preHandle================");    
-        String requestUri = request.getRequestURI();  
+        }*/ 
+	   /*String requestUri = request.getRequestURI();  
         String contextPath = request.getContextPath();  
         String url = requestUri.substring(contextPath.length());  
         
         log.info("requestUri:"+requestUri);    
         log.info("contextPath:"+contextPath);    
-        log.info("url:"+url);    
+        log.info("url:"+url);    */
+        log.info("==============执行顺序: 1、preHandle================"); 
+        long beginTime = System.currentTimeMillis();//1、开始时间
+        System.out.println("开始时间==>"+beginTime);
+        startTime.set(beginTime);//线程绑定变量（该数据只有当前请求的线程可见）
           
         String username =  request.getSession().getAttribute("userName")==null?null:request.getSession().getAttribute("userName").toString();   
         if(username == null){ 
@@ -114,7 +121,16 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request,    
             HttpServletResponse response, Object handler, Exception ex)    
             throws Exception {    
-        log.info("==============执行顺序: 3、afterCompletion================");    
+        log.info("==============执行顺序: 3、afterCompletion================"); 
+        long endTime = System.currentTimeMillis();//2、结束时间  
+        System.out.println("结束时间==>"+endTime);
+        long beginTime = startTime.get();//得到线程绑定的局部变量（开始时间）
+        long consumeTime = endTime - beginTime;//3、消耗的时间  
+        System.out.println("消耗的时间==>"+consumeTime);
+        if(consumeTime > 500) {//此处认为处理时间超过500毫秒的请求为慢请求  
+            //TODO 记录到日志文件  
+            System.out.println(String.format("%s consume %d millis", request.getRequestURI(), consumeTime));  
+        }          
     }
     
     public static boolean isAjaxRequest(HttpServletRequest request)  
